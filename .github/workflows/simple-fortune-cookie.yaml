@@ -1,7 +1,7 @@
 name: Simple Fortune Cookie
-on: push
-# pull_request:
-#   branches: [main]
+on:
+  pull_request:
+    branches: [main]
 env: 
   docker_username: ${{ secrets.DOCKER_USERNAME }}
   docker_password: ${{ secrets.DOCKER_PASSWORD }}
@@ -28,6 +28,7 @@ jobs:
       with:
         name: Code
         path: .
+    - uses: actions/checkout@v2
     - name: Run application
       run: docker-compose up -d --build
   Test:
@@ -59,21 +60,23 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     needs: Docker-image
-    steps:       
-    - name: Download code
-      uses: actions/download-artifact@v2
-      with:
-        name: Code
-        path: .     
+    steps:    
     - uses: actions/checkout@v2     
     - name: Decode
       run: echo "$KUBE_CONFIG_DATA" | base64 -d > config.txt
+    # - name: deploy to cluster
+    #   uses: steebchen/kubectl@v2.0.0
+    #   with: 
+    #     config: ${{ secrets.KUBE_CONFIG_DATA }}
+    #     command: |
+    #       set image --record deployment/simple-fortune-cookie-frontend frontend=${{ github.repository }}:${{ github.sha }}
+    #       set image --record deployment/simple-fortune-cookie-backend backend=${{ github.repository }}:${{ github.sha }}
     - name: Trigger deploy
       run: |
-        kubectl --kubeconfig=config.txt apply -f backend-svc.yml
-        kubectl --kubeconfig=config.txt apply -f frontend-svc.yml
         kubectl --kubeconfig=config.txt apply -f deployment-backend.yml
         kubectl --kubeconfig=config.txt apply -f deployment-db-server.yml
-        kubectl --kubeconfig=config.txt apply -f deployment-frontend.yml 
+        kubectl --kubeconfig=config.txt apply -f deployment-frontend.yml
+        kubectl --kubeconfig=config.txt apply -f backend-svc.yml
+        kubectl --kubeconfig=config.txt apply -f frontend-svc.yml
     - name: Functional testing of the URL
-      run: curl -s http://34.78.70.151:8080
+      run: curl -s http://35.233.34.108:32224/

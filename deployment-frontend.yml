@@ -5,7 +5,7 @@ metadata:
   labels:
     app: simple-fortune-cookie-frontend
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: simple-fortune-cookie-frontend
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: mara816docker/simple-fortune-cookie-frontend:latest
+        image: mara816docker/simple-fortune-cookie-frontend:latest  
         ports:
         - containerPort: 8080
         env:
