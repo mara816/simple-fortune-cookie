@@ -79,4 +79,4 @@ jobs:
         kubectl --kubeconfig=config.txt apply -f backend-svc.yml
         kubectl --kubeconfig=config.txt apply -f frontend-svc.yml
     - name: Functional testing of the URL
-      run: curl -s http://34.79.254.215:31244/
+      run: curl -s http://35.233.34.108:32224/
